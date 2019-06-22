@@ -1,0 +1,98 @@
+#include <iostream>
+#include<string.h>
+using namespace std ;
+#define N 1000
+//记录路径０左子树，１右子树
+int sign[N] ;
+//最短次数
+int minSign[N] ;
+//记录已经转化过的值
+int recordx[N] ;
+
+int minCount = INT8_MAX;
+int nowCount = 0 ;
+//记录出现过的值
+//被转化成的值
+int src ;
+//要转化成的值
+int dst ;
+int f(int i) {
+    return 3*i ;
+}
+
+int g(int i) {
+    return i/2 ;
+}
+
+//判断是否能进行转化
+int test(int n) {
+    int i = 0 ;
+    while(recordx[i] != -1) {
+        if(n == recordx[i]) return 0 ;
+        i++ ;
+    }
+    return 1 ;
+}
+
+int backTrack(int x) {
+    //表示转成了之前出现过的值
+    if(test(x) == 0) {
+        return 0 ;
+    }      
+
+
+    
+    //转换成了相应的值
+    if(x == dst) {
+        if(nowCount < minCount) {
+            minCount = nowCount ;
+            for(int i=1; i<=nowCount; i++) {
+                minSign[i] = sign[i] ;
+            }
+        } 
+        return 1 ;
+    }
+    nowCount ++ ;
+    //记录值
+    recordx[nowCount] = x ;
+    //当前次数小域minCount
+    if(nowCount < minCount) {
+        if(x<dst) {
+            sign[nowCount] = 0 ;
+            backTrack(f(x)) ;
+        }
+        else {
+            sign[nowCount] = 1 ;
+            backTrack(g(x)) ;
+        }
+    }
+}   
+
+//初始化一些东西
+void processInit() {
+    memset(recordx, -1, sizeof(recordx)) ;
+    memset(sign, -1, sizeof(sign)) ;
+    memset(minSign, -1, sizeof(minSign)) ;
+    if(backTrack(src) == 1) {
+        cout << minCount << endl ;
+        for(int i=nowCount; i>0; i--) {
+            if(minSign[i] == 0) {
+                cout << "f" ;
+            }
+            else {
+               cout << "g" ;
+            }
+        }
+    }
+    else {
+        cout << "无法转化！" << endl ;
+    }
+}
+
+int main()
+{
+    cin >>src>>dst ;
+    processInit() ;
+    return 0;
+}
+
